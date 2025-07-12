@@ -1,108 +1,111 @@
-public static void Main(string[] args)
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class Program
+{
+    public static void Main(string[] args)
     {
-        
-
-        
-        string[] books = {
-            "The Hobbit," ,
-            "1984,",
-            "To Kill a Mockingbird,",
-            "The Great Gatsby,",
-            "Harry Potter and the Sorcerer's Stone,"
+        List<string> books = new List<string>
+        {
+            "The Hobbit",
+            "1984",
+            "To Kill a Mockingbird",
+            "The Great Gatsby",
+            "Harry Potter and the Sorcerer's Stone"
         };
-
 
         while (true)
         {
+            Console.WriteLine();
             Console.WriteLine("Library Menu");
             Console.WriteLine("1. View all books");
             Console.WriteLine("2. Search book by title");
             Console.WriteLine("3. Exit");
             Console.Write("Option: ");
             
-
-            int num = Convert.ToInt32(Console.ReadLine());
-         
-
-
+            // Add input validation
+            if (!int.TryParse(Console.ReadLine(), out int num))
+            {
+                Console.WriteLine("Please enter a valid number.");
+                continue;
+            }
 
             switch (num)
             {
                 case 1:
                     Console.WriteLine("Library books: ");
-                    Console.WriteLine(string.Join(" ", books));
-                    Console.Write("If you want to go back enter 1: ");
-                    
-                    int goBack = Convert.ToInt32(Console.ReadLine());
-                    
-                    switch (goBack)
+                    for (int i = 0; i < books.Count; i++)
                     {
-                        case 1: break;
-                        default: Console.WriteLine("Please enter 1 if you want to go back");
-                            break;
-
+                        Console.WriteLine($"{i + 1}. {books[i]}");
                     }
+                    Console.Write("Press any key to continue...");
+                    Console.ReadKey();
                     break;
-                
                 
                 case 2:
-                    Console.WriteLine("Enter book title to search: ");
+                    Console.Write("Enter book title to search: ");
                     string bookName = Console.ReadLine();
                     
-                    Console.WriteLine(SearchByBookName(books, bookName));
+                    string searchResult = SearchByBookName(books, bookName);
+                    Console.WriteLine(searchResult);
                     
-                    Console.WriteLine("Do you want to take it? yes/no");
-                    
-                    string option = Console.ReadLine();
-                    
-                    switch (option)
+                    if (searchResult != "Book not found")
                     {
-                        case "yes" :
-                            break;
-                        case "no" : break;
-                        default: Console.WriteLine("Plese enter yes or no");
-                            break;
+                        Console.Write("Do you want to take it? (yes/no): ");
+                        string option = Console.ReadLine()?.ToLower();
+                        
+                        switch (option)
+                        {
+                            case "yes":
+                                RemoveBook(books, bookName);
+                                Console.WriteLine($"You have taken '{bookName}'. It has been removed from the library.");
+                                break;
+                            case "no":
+                                Console.WriteLine("Book remains in the library.");
+                                break;
+                            default:
+                                Console.WriteLine("Please enter yes or no");
+                                break;
+                        }
                     }
+                    
+                    Console.Write("Press any key to continue...");
+                    Console.ReadKey();
                     break;
                 
-                
-                case 3: return;
+                case 3: 
+                    Console.WriteLine("Thank you for using the library system!");
+                    return;
+                    
                 default:
                     Console.WriteLine("Please enter number between 1-3");
                     break;
-
             }
         }
-
-
-
-
     }
 
-    public static string SearchByBookName(string[] books, string bookName)
+    public static string SearchByBookName(List<string> books, string bookName)
     {
-        for (int i = 0; i < books.Length; i++)
+        var foundBook = books.FirstOrDefault(book => 
+            book.Equals(bookName, StringComparison.OrdinalIgnoreCase));
+        
+        if (foundBook != null)
         {
-            
-            if (books[i] == bookName)
-            {
-                Console.Write("Here is your book: ");
-
-                return books[i];
-            }
+            return $"Here is your book: {foundBook}";
         }
-
+        
         return "Book not found";
     }
 
-    public static void NewBooks(string[] books ,string bookName)
+    public static void RemoveBook(List<string> books, string bookName)
     {
-        string[] newBooksArr;
-        for (int i = 0; i < books.Length; i++)
-        {
-            if (books[i] == bookName){
-                
-            }
-        }
+        var bookToRemove = books.FirstOrDefault(book => 
+            book.Equals(bookName, StringComparison.OrdinalIgnoreCase));
         
+        if (bookToRemove != null)
+        {
+            books.Remove(bookToRemove);
+        }
     }
+}
